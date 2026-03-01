@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sadari • Peduli • Berani</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-start: #0f0c29;
+      --bg-mid:   #302b63;
+      --bg-end:   #24243e;
+      --glass-bg: rgba(255,255,255,0.07);
+      --glass-border: rgba(255,255,255,0.15);
+      --glass-hover: rgba(255,255,255,0.12);
+      --accent:   #a78bfa;
+      --accent2:  #60a5fa;
+      --accent3:  #34d399;
+      --accent4:  #f472b6;
+      --text:     #e2e8f0;
+      --text-dim: #94a3b8;
+      --radius:   16px;
+      --shadow:   0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, var(--bg-start), var(--bg-mid), var(--bg-end));
+      background-attachment: fixed;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,12,41,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .nav-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .nav-brand {
+      font-size: 1.1rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      padding: 0.9rem 0;
+      white-space: nowrap;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover { background: var(--glass-hover); color: var(--text); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(96,165,250,0.25));
+      color: var(--accent);
+      border: 1px solid rgba(167,139,250,0.4);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 4rem 1.5rem 2rem;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(167,139,250,0.2), rgba(96,165,250,0.2));
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      padding: 0.35rem 1.2rem;
+      font-size: 0.8rem;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      color: var(--text-dim);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+
+    /* ── Main Content ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* ── Sections ── */
+    .section { display: none; animation: fadeIn 0.4s ease; }
+    .section.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Section Heading ── */
+    .section-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .section-header .emoji {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+      color: var(--text-dim);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .accent-sadari  { color: var(--accent); }
+    .accent-peduli  { color: var(--accent2); }
+    .accent-berani  { color: var(--accent3); }
+    .accent-latihan { color: var(--accent4); }
+
+    /* ── Glass Card ── */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+    }
+
+    .glass-card:hover {
+      background: var(--glass-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+    }
+
+    /* ── 4-cards grid ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .info-card {
+      padding: 1.4rem 1.2rem;
+      text-align: center;
+    }
+
+    .info-card .card-icon { font-size: 2rem; display: block; margin-bottom: 0.6rem; }
+    .info-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .info-card p  { font-size: 0.82rem; color: var(--text-dim); line-height: 1.5; }
+
+    .card-kelebihan { border-top: 3px solid var(--accent3); }
+    .card-kelemahan { border-top: 3px solid var(--accent4); }
+    .card-masalah   { border-top: 3px solid #fbbf24; }
+    .card-kekurangan{ border-top: 3px solid var(--accent2); }
+
+    /* ── Form area ── */
+    .form-area {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-area label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.04em;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(167,139,250,0.2);
+    }
+
+    textarea { min-height: 130px; }
+
+    /* ── Buttons ── */
+    .btn-group {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+    }
+    .btn-danger {
+      background: rgba(239,68,68,0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239,68,68,0.35);
+    }
+
+    /* ── Tips box ── */
+    .tips-box {
+      background: linear-gradient(135deg, rgba(96,165,250,0.1), rgba(52,211,153,0.1));
+      border: 1px solid rgba(96,165,250,0.3);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .tips-box h4 { font-size: 0.9rem; color: var(--accent2); margin-bottom: 0.6rem; }
+    .tips-box ul { list-style: none; padding: 0; }
+    .tips-box li {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      padding: 0.3rem 0;
+      padding-left: 1.4rem;
+      position: relative;
+      line-height: 1.5;
+    }
+    .tips-box li::before { content: '✦'; position: absolute; left: 0; color: var(--accent2); font-size: 0.7rem; top: 0.45rem; }
+
+    /* ── Day plan grid ── */
+    .day-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .day-item label { font-size: 0.78rem; color: var(--accent3); margin-bottom: 0.3rem; }
+    .day-item textarea { min-height: 80px; font-size: 0.82rem; }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; padding: 0; margin-bottom: 1rem; }
+    .checklist li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--glass-border);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .checklist li:last-child { border-bottom: none; }
+
+    .checklist input[type="checkbox"] {
+      width: 1.1rem;
+      height: 1.1rem;
+      accent-color: var(--accent4);
+      flex-shrink: 0;
+      margin-top: 0.15rem;
+      cursor: pointer;
+    }
+
+    /* ── Quiz ── */
+    .quiz-question {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .quiz-question p {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    .quiz-option {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 0.55rem 0.9rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .quiz-option:hover { background: var(--glass-hover); border-color: var(--accent4); }
+    .quiz-option input { accent-color: var(--accent4); flex-shrink: 0; }
+    .quiz-option.correct { background: rgba(52,211,153,0.15); border-color: var(--accent3); }
+    .quiz-option.wrong   { background: rgba(239,68,68,0.15);  border-color: #f87171; }
+
+    .quiz-result {
+      display: none;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(167,139,250,0.15), rgba(96,165,250,0.15));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+    .quiz-result.show { display: block; animation: fadeIn 0.3s ease; }
+    .quiz-result .score { font-size: 2.5rem; font-weight: 800; }
+    .quiz-result .feedback { font-size: 0.9rem; color: var(--text-dim); margin-top: 0.4rem; }
+
+    /* ── 48h banner ── */
+    .rule-banner {
+      background: linear-gradient(135deg, rgba(52,211,153,0.15), rgba(167,139,250,0.1));
+      border: 1px solid rgba(52,211,153,0.35);
+      border-radius: var(--radius);
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .rule-banner .rule-icon { font-size: 2rem; flex-shrink: 0; }
+    .rule-banner h3 { font-size: 1rem; color: var(--accent3); margin-bottom: 0.3rem; }
+    .rule-banner p  { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── Scenario box ── */
+    .scenario-box {
+      background: linear-gradient(135deg, rgba(244,114,182,0.1), rgba(167,139,250,0.1));
+      border: 1px solid rgba(244,114,182,0.3);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+    .scenario-box h4 { font-size: 0.9rem; color: var(--accent4); margin-bottom: 0.5rem; }
+    .scenario-box p  { font-size: 0.85rem; color: var(--text-dim); line-height: 1.6; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: linear-gradient(135deg, var(--bg-mid), var(--bg-end));
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 0.75rem 1.2rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      z-index: 999;
+      max-width: 280px;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 500px) {
+      .nav-brand { font-size: 0.95rem; }
+      .tab-btn   { padding: 0.6rem 0.65rem; font-size: 0.8rem; }
+      .hero      { padding: 2.5rem 1rem 1.5rem; }
+      .cards-grid{ grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+      margin: 1.5rem 0;
+    }
+
+    /* ── Input row ── */
+    .input-row { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 0.8rem; }
+    .input-row label { font-size: 0.85rem; font-weight: 600; color: var(--accent3); }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-brand">🌟 Sadari • Peduli • Berani</span>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="showTab('sadari', this)">🪞 Sadari</button>
+      <button class="tab-btn" onclick="showTab('peduli', this)">🤝 Peduli</button>
+      <button class="tab-btn" onclick="showTab('berani', this)">🚀 Berani</button>
+      <button class="tab-btn" onclick="showTab('latihan', this)">🎯 Latihan</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<div class="hero">
+  <span class="hero-badge">Modul Kepemimpinan & Soft Skills — SMK</span>
+  <h1>Sadari • Peduli • Berani</h1>
+  <p>Kembangkan dirimu sebagai pemimpin sejati. Kenali dirimu, pedulikan sekitarmu, dan beranikan dirimu untuk bertindak.</p>
+</div>
+
+<main>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION A — SADARI
+  ══════════════════════════════════════════════ -->
+  <section id="section-sadari" class="section active">
+    <div class="section-header">
+      <span class="emoji">🪞</span>
+      <h2 class="accent-sadari">SADARI</h2>
+      <p>Self-awareness — memahami dirimu secara jujur: kelebihan yang bisa kamu andalkan, kelemahan yang perlu diperbaiki, masalah yang perlu diselesaikan, dan kekurangan yang harus diakui.</p>
+    </div>
+
+    <div class="cards-grid">
+      <div class="glass-card info-card card-kelebihan">
+        <span class="card-icon">💪</span>
+        <h3>Kelebihan</h3>
+        <p>Potensi &amp; kekuatan dirimu yang menjadi modal utama untuk maju.</p>
+      </div>
+      <div class="glass-card info-card card-kelemahan">
+        <span class="card-icon">🔍</span>
+        <h3>Kelemahan</h3>
+        <p>Aspek diri yang perlu dikembangkan agar tidak menjadi penghambat.</p>
+      </div>
+      <div class="glass-card info-card card-masalah">
+        <span class="card-icon">⚡</span>
+        <h3>Masalah</h3>
+        <p>Tantangan nyata yang kamu hadapi dan perlu segera ditangani.</p>
+      </div>
+      <div class="glass-card info-card card-kekurangan">
+        <span class="card-icon">🌱</span>
+        <h3>Kekurangan</h3>
+        <p>Hal-hal yang belum kamu miliki namun bisa dipelajari &amp; dilatih.</p>
+      </div>
+    </div>
+
+    <div class="form-area">
+      <label for="sadari-text">✏️ Refleksi Diri — Tuliskan kesadaran tentang dirimu</label>
+      <textarea id="sadari-text" placeholder="Contoh:&#10;Kelebihan saya: ...&#10;Kelemahan saya: ...&#10;Masalah yang saya hadapi: ...&#10;Kekurangan yang ingin saya perbaiki: ..."></textarea>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="saveData('sadari')">💾 Simpan</button>
+        <button class="btn btn-secondary" onclick="loadData('sadari')">📂 Muat</button>
+        <button class="btn btn-danger" onclick="resetData('sadari')">🗑️ Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION B — PEDULI
+  ══════════════════════════════════════════════ -->
+  <section id="section-peduli" class="section">
+    <div class="section-header">
+      <span class="emoji">🤝</span>
+      <h2 class="accent-peduli">PEDULI</h2>
+      <p>Care &amp; Initiate Solutions — kepemimpinan dimulai saat kamu peduli terhadap sekitarmu dan berinisiatif mencari solusi, bukan hanya mengeluh.</p>
+    </div>
+
+    <div class="tips-box">
+      <h4>💡 Tips: Mendengarkan Aktif &amp; Kolaborasi</h4>
+      <ul>
+        <li>Dengarkan tanpa menyela — pahami dulu sebelum merespons.</li>
+        <li>Tunjukkan empati: "Aku mengerti kamu merasa..."</li>
+        <li>Ajak bicara satu per satu, bukan sekaligus di grup besar.</li>
+        <li>Kolaborasi bukan berarti semua setuju, tapi semua didengar.</li>
+        <li>Fokus pada masalah, bukan pada orangnya.</li>
+      </ul>
+    </div>
+
+    <div class="form-area">
+      <label>🎯 Framework Peduli</label>
+
+      <div class="input-row">
+        <label for="peduli-masalah">1. Masalah Prioritas yang Aku Lihat</label>
+        <textarea id="peduli-masalah" rows="3" style="min-height:80px"
+          placeholder="Contoh: Ada anggota tim yang jarang hadir latihan sehingga persiapan proyek terhambat..."></textarea>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="input-row">
+        <label for="peduli-solusi1">2a. Opsi Solusi Pertama</label>
+        <textarea id="peduli-solusi1" rows="2" style="min-height:70px"
+          placeholder="Solusi 1: ..."></textarea>
+      </div>
+      <div class="input-row">
+        <label for="peduli-solusi2">2b. Opsi Solusi Kedua</label>
+        <textarea id="peduli-solusi2" rows="2" style="min-height:70px"
+          placeholder="Solusi 2: ..."></textarea>
+      </div>
+      <div class="input-row">
+        <label for="peduli-solusi3">2c. Opsi Solusi Ketiga</label>
+        <textarea id="peduli-solusi3" rows="2" style="min-height:70px"
+          placeholder="Solusi 3: ..."></textarea>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="input-row">
+        <label for="peduli-langkah">3. Satu Langkah Pertama yang Akan Aku Lakukan</label>
+        <textarea id="peduli-langkah" rows="2" style="min-height:70px"
+          placeholder="Langkah pertama: ..."></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="savePeduli()">💾 Simpan</button>
+        <button class="btn btn-secondary" onclick="loadPeduli()">📂 Muat</button>
+        <button class="btn btn-danger" onclick="resetPeduli()">🗑️ Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION C — BERANI
+  ══════════════════════════════════════════════ -->
+  <section id="section-berani" class="section">
+    <div class="section-header">
+      <span class="emoji">🚀</span>
+      <h2 class="accent-berani">BERANI</h2>
+      <p>Idea + Execution — ide hebat tidak ada gunanya tanpa tindakan. Keberanian bukan berarti tidak takut, melainkan bertindak meski takut.</p>
+    </div>
+
+    <div class="rule-banner">
+      <span class="rule-icon">⏱️</span>
+      <div>
+        <h3>Aturan 48 Jam</h3>
+        <p>Setelah kamu punya ide atau keputusan, <strong>ambil satu langkah nyata dalam 48 jam</strong>. Bukan besok, bukan lusa — mulai sekarang. Otak kita cenderung menunda jika tidak ada tindakan segera.</p>
+      </div>
+    </div>
+
+    <div class="form-area">
+      <div class="input-row">
+        <label for="berani-goal">🎯 Tujuan / Ide yang Ingin Aku Wujudkan</label>
+        <input type="text" id="berani-goal" placeholder="Contoh: Memimpin proyek kebersihan sekolah bulan ini" />
+      </div>
+
+      <div class="divider"></div>
+      <label style="font-size:0.85rem;font-weight:600;color:var(--accent3);display:block;margin-bottom:0.8rem;">📅 Rencana Aksi 7 Hari</label>
+
+      <div class="day-grid" id="day-grid">
+        <!-- generated by JS -->
+      </div>
+
+      <div class="btn-group" style="margin-top:1rem;">
+        <button class="btn btn-primary" onclick="saveBerani()">💾 Simpan</button>
+        <button class="btn btn-secondary" onclick="loadBerani()">📂 Muat</button>
+        <button class="btn btn-danger" onclick="resetBerani()">🗑️ Reset</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION D — LATIHAN
+  ══════════════════════════════════════════════ -->
+  <section id="section-latihan" class="section">
+    <div class="section-header">
+      <span class="emoji">🎯</span>
+      <h2 class="accent-latihan">LATIHAN</h2>
+      <p>Praktikkan Sadari, Peduli, Berani melalui skenario nyata dan kuis singkat.</p>
+    </div>
+
+    <!-- Scenario -->
+    <div class="scenario-box">
+      <h4>📋 Skenario</h4>
+      <p>Kamu tergabung dalam tim proyek sekolah. Beberapa anggota sering terlambat datang, satu orang hampir tidak pernah berbicara dalam rapat, dan deadline semakin dekat. Sebagai ketua tim, apa yang kamu lakukan?</p>
+    </div>
+
+    <!-- Checklist -->
+    <div class="form-area">
+      <label>✅ Checklist Tindakan</label>
+      <ul class="checklist">
+        <li>
+          <input type="checkbox" id="chk-sadari" />
+          <span><strong>SADARI</strong> — Aku sudah mengenali situasi ini, memahami peranku, dan menyadari emosi yang muncul.</span>
+        </li>
+        <li>
+          <input type="checkbox" id="chk-peduli1" />
+          <span><strong>PEDULI</strong> — Aku sudah mendengarkan setiap anggota tim untuk memahami kendala mereka.</span>
+        </li>
+        <li>
+          <input type="checkbox" id="chk-peduli2" />
+          <span><strong>PEDULI</strong> — Aku sudah menawarkan minimal 2 solusi konkret kepada tim.</span>
+        </li>
+        <li>
+          <input type="checkbox" id="chk-berani1" />
+          <span><strong>BERANI</strong> — Aku mengambil keputusan dan menyampaikannya dengan tegas namun tetap menghargai pendapat orang lain.</span>
+        </li>
+        <li>
+          <input type="checkbox" id="chk-berani2" />
+          <span><strong>BERANI</strong> — Aku berkomitmen mengeksekusi langkah pertama dalam 48 jam ke depan.</span>
+        </li>
+      </ul>
+
+      <div class="input-row">
+        <label for="latihan-text">📝 Tulis Jawabanmu Secara Lengkap</label>
+        <textarea id="latihan-text" placeholder="Ceritakan langkah-langkah yang akan kamu ambil sebagai ketua tim untuk menghadapi skenario ini..."></textarea>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="saveLatihan()">💾 Simpan</button>
+        <button class="btn btn-secondary" onclick="loadLatihan()">📂 Muat</button>
+        <button class="btn btn-danger" onclick="resetLatihan()">🗑️ Reset</button>
+      </div>
+    </div>
+
+    <!-- Mini Quiz -->
+    <div class="form-area" style="margin-top:1.5rem;">
+      <label>🧠 Mini Kuis — 3 Pertanyaan</label>
+
+      <div class="quiz-question" id="q1">
+        <p>1. Apa yang dimaksud dengan <em>self-awareness</em> dalam konteks kepemimpinan?</p>
+        <div class="quiz-options">
+          <label class="quiz-option"><input type="radio" name="q1" value="a" /> <span>Kemampuan mengenali dan memahami emosi, kekuatan, serta kelemahan diri sendiri.</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="b" /> <span>Kemampuan mengatur orang lain agar mengikuti perintah kita.</span></label>
+          <label class="quiz-option"><input type="radio" name="q1" value="c" /> <span>Kemampuan berbicara di depan umum dengan percaya diri.</span></label>
+        </div>
+      </div>
+
+      <div class="quiz-question" id="q2">
+        <p>2. Seorang anggota tim terlihat murung dan tidak produktif. Pendekatan PEDULI yang tepat adalah…</p>
+        <div class="quiz-options">
+          <label class="quiz-option"><input type="radio" name="q2" value="a" /> <span>Mengabaikannya karena itu masalah pribadi dan bukan urusan tim.</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="b" /> <span>Langsung menegurnya di depan seluruh anggota tim agar ia sadar.</span></label>
+          <label class="quiz-option"><input type="radio" name="q2" value="c" /> <span>Mengajaknya bicara empat mata, mendengarkan dengan aktif, lalu cari solusi bersama.</span></label>
+        </div>
+      </div>
+
+      <div class="quiz-question" id="q3">
+        <p>3. Mengapa Aturan 48 Jam penting dalam prinsip BERANI?</p>
+        <div class="quiz-options">
+          <label class="quiz-option"><input type="radio" name="q3" value="a" /> <span>Karena 48 jam adalah waktu terbaik untuk tidur dan memikirkan ide lebih lanjut.</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="b" /> <span>Karena tindakan segera mencegah penundaan dan memperkuat komitmen terhadap ide.</span></label>
+          <label class="quiz-option"><input type="radio" name="q3" value="c" /> <span>Karena semua proyek sekolah harus selesai dalam 48 jam.</span></label>
+        </div>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="submitQuiz()">🎲 Nilai Jawaban</button>
+        <button class="btn btn-secondary" onclick="resetQuiz()">🔄 Ulangi Kuis</button>
+      </div>
+
+      <div class="quiz-result" id="quiz-result">
+        <div class="score" id="quiz-score"></div>
+        <div class="feedback" id="quiz-feedback"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  © 2026 Leadership Module | Sadari • Peduli • Berani
+</footer>
+
+<!-- ── Toast ── -->
+<div id="toast"></div>
+
+<script>
+  /* ─── Build 7-day input grid ─── */
+  (function buildDayGrid() {
+    const grid = document.getElementById('day-grid');
+    const days = ['Hari 1','Hari 2','Hari 3','Hari 4','Hari 5','Hari 6','Hari 7'];
+    days.forEach(function(d, i) {
+      const div = document.createElement('div');
+      div.className = 'day-item';
+      div.innerHTML =
+        '<label for="day-' + i + '">' + d + '</label>' +
+        '<textarea id="day-' + i + '" placeholder="Langkah di ' + d.toLowerCase() + '..."></textarea>';
+      grid.appendChild(div);
+    });
+  })();
+
+  /* ─── Tab switching ─── */
+  function showTab(name, btn) {
+    document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+    document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+    document.getElementById('section-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  /* ─── Toast ─── */
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(function() { t.classList.remove('show'); }, 2800);
+  }
+
+  /* ─── SADARI localStorage ─── */
+  function saveData(key) {
+    var val = document.getElementById(key + '-text').value.trim();
+    if (!val) { showToast('⚠️ Tidak ada yang disimpan.'); return; }
+    localStorage.setItem('spb_' + key, val);
+    showToast('✅ Refleksi Sadari tersimpan!');
+  }
+  function loadData(key) {
+    var val = localStorage.getItem('spb_' + key);
+    if (val) {
+      document.getElementById(key + '-text').value = val;
+      showToast('📂 Data dimuat!');
+    } else {
+      showToast('ℹ️ Belum ada data tersimpan.');
+    }
+  }
+  function resetData(key) {
+    document.getElementById(key + '-text').value = '';
+    localStorage.removeItem('spb_' + key);
+    showToast('🗑️ Data direset.');
+  }
+
+  /* ─── PEDULI localStorage ─── */
+  var PEDULI_FIELDS = ['peduli-masalah','peduli-solusi1','peduli-solusi2','peduli-solusi3','peduli-langkah'];
+  function savePeduli() {
+    var data = {};
+    PEDULI_FIELDS.forEach(function(id) { data[id] = document.getElementById(id).value; });
+    localStorage.setItem('spb_peduli', JSON.stringify(data));
+    showToast('✅ Data Peduli tersimpan!');
+  }
+  function loadPeduli() {
+    var raw = localStorage.getItem('spb_peduli');
+    if (raw) {
+      var data = JSON.parse(raw);
+      PEDULI_FIELDS.forEach(function(id) {
+        if (data[id] !== undefined) document.getElementById(id).value = data[id];
+      });
+      showToast('📂 Data Peduli dimuat!');
+    } else {
+      showToast('ℹ️ Belum ada data tersimpan.');
+    }
+  }
+  function resetPeduli() {
+    PEDULI_FIELDS.forEach(function(id) { document.getElementById(id).value = ''; });
+    localStorage.removeItem('spb_peduli');
+    showToast('🗑️ Data Peduli direset.');
+  }
+
+  /* ─── BERANI localStorage ─── */
+  function saveBerani() {
+    var data = { goal: document.getElementById('berani-goal').value, days: [] };
+    for (var i = 0; i < 7; i++) {
+      data.days.push(document.getElementById('day-' + i).value);
+    }
+    localStorage.setItem('spb_berani', JSON.stringify(data));
+    showToast('✅ Rencana Aksi tersimpan!');
+  }
+  function loadBerani() {
+    var raw = localStorage.getItem('spb_berani');
+    if (raw) {
+      var data = JSON.parse(raw);
+      document.getElementById('berani-goal').value = data.goal || '';
+      for (var i = 0; i < 7; i++) {
+        document.getElementById('day-' + i).value = (data.days && data.days[i]) ? data.days[i] : '';
+      }
+      showToast('📂 Rencana Aksi dimuat!');
+    } else {
+      showToast('ℹ️ Belum ada data tersimpan.');
+    }
+  }
+  function resetBerani() {
+    document.getElementById('berani-goal').value = '';
+    for (var i = 0; i < 7; i++) { document.getElementById('day-' + i).value = ''; }
+    localStorage.removeItem('spb_berani');
+    showToast('🗑️ Rencana Aksi direset.');
+  }
+
+  /* ─── LATIHAN localStorage ─── */
+  var LATIHAN_CHECKS = ['chk-sadari','chk-peduli1','chk-peduli2','chk-berani1','chk-berani2'];
+  function saveLatihan() {
+    var val = document.getElementById('latihan-text').value.trim();
+    if (!val) { showToast('⚠️ Tidak ada yang disimpan.'); return; }
+    var checks = {};
+    LATIHAN_CHECKS.forEach(function(id) { checks[id] = document.getElementById(id).checked; });
+    localStorage.setItem('spb_latihan', JSON.stringify({ text: val, checks: checks }));
+    showToast('✅ Jawaban Latihan tersimpan!');
+  }
+  function loadLatihan() {
+    var raw = localStorage.getItem('spb_latihan');
+    if (raw) {
+      var data = JSON.parse(raw);
+      document.getElementById('latihan-text').value = data.text || '';
+      LATIHAN_CHECKS.forEach(function(id) {
+        if (data.checks && data.checks[id] !== undefined)
+          document.getElementById(id).checked = data.checks[id];
+      });
+      showToast('📂 Data Latihan dimuat!');
+    } else {
+      showToast('ℹ️ Belum ada data tersimpan.');
+    }
+  }
+  function resetLatihan() {
+    document.getElementById('latihan-text').value = '';
+    LATIHAN_CHECKS.forEach(function(id) { document.getElementById(id).checked = false; });
+    localStorage.removeItem('spb_latihan');
+    showToast('🗑️ Data Latihan direset.');
+  }
+
+  /* ─── Quiz ─── */
+  var CORRECT = { q1: 'a', q2: 'c', q3: 'b' };
+
+  function submitQuiz() {
+    var score = 0;
+    Object.keys(CORRECT).forEach(function(q) {
+      var selected = document.querySelector('input[name="' + q + '"]:checked');
+      var options = document.querySelectorAll('input[name="' + q + '"]');
+      options.forEach(function(opt) {
+        var lbl = opt.closest('.quiz-option');
+        lbl.classList.remove('correct','wrong');
+        if (opt.value === CORRECT[q]) lbl.classList.add('correct');
+        else if (selected && opt.value === selected.value) lbl.classList.add('wrong');
+      });
+      if (selected && selected.value === CORRECT[q]) score++;
+    });
+
+    var pct = Math.round((score / 3) * 100);
+    var feedback = score === 3
+      ? '🏆 Luar biasa! Kamu memahami semua konsep Sadari–Peduli–Berani dengan sangat baik!'
+      : score === 2
+      ? '👍 Bagus! Tinggal satu langkah lagi untuk sempurna. Baca ulang bagian yang masih kurang.'
+      : score === 1
+      ? '💪 Jangan menyerah! Baca kembali modul ini dan coba lagi.'
+      : '🌱 Yuk, mulai lagi dari awal dan pahami setiap bagian modul ini.';
+
+    document.getElementById('quiz-score').textContent = score + ' / 3 (' + pct + '%)';
+    document.getElementById('quiz-feedback').textContent = feedback;
+    var result = document.getElementById('quiz-result');
+    result.classList.add('show');
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function resetQuiz() {
+    ['q1','q2','q3'].forEach(function(q) {
+      var options = document.querySelectorAll('input[name="' + q + '"]');
+      options.forEach(function(opt) {
+        opt.checked = false;
+        opt.closest('.quiz-option').classList.remove('correct','wrong');
+      });
+    });
+    document.getElementById('quiz-result').classList.remove('show');
+    showToast('🔄 Kuis direset, coba lagi!');
+  }
+</script>
+</body>
+</html>
