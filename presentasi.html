@@ -108,6 +108,16 @@
             margin-bottom: 14px;
         }
 
+        .three-scene {
+            width: 240px;
+            height: 200px;
+            margin: 0 auto 16px;
+            border-radius: 18px;
+            background: radial-gradient(circle at top, rgba(79, 70, 229, 0.18), rgba(79, 70, 229, 0.05));
+            backdrop-filter: blur(8px);
+            box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.35);
+        }
+
         .center-text {
             text-align: center;
         }
@@ -192,6 +202,12 @@
                 font-size: 2.5rem;
             }
 
+            .three-scene {
+                width: 200px;
+                height: 170px;
+                margin-bottom: 12px;
+            }
+
             .navigation {
                 width: calc(100vw - 24px);
                 gap: 10px;
@@ -228,6 +244,11 @@
                 font-size: 0.9rem;
                 padding: 9px 10px;
             }
+
+            .three-scene {
+                width: 180px;
+                height: 150px;
+            }
         }
     </style>
 </head>
@@ -253,6 +274,7 @@
         <section class="slide">
             <h2>Pilar 1: Sadari</h2>
             <div class="emoji">🧠</div>
+            <div class="three-scene" data-model="brain"></div>
             <p><span class="highlight">Sadari</span> diperkuat oleh prefrontal cortex (bagian otak depan yang mengatur perencanaan dan kontrol diri).</p>
             <ul>
                 <li>Latihan refleksi menebalkan koneksi sinaptik prefrontal sehingga arah tujuan pribadi makin jelas.</li>
@@ -264,6 +286,7 @@
         <section class="slide">
             <h2>Pilar 2: Peduli</h2>
             <div class="emoji">🤝</div>
+            <div class="three-scene" data-model="empathy"></div>
             <p><span class="highlight">Peduli</span> memakai sistem mirror neuron (jaringan saraf peniru ekspresi) sehingga empati dapat dilatih.</p>
             <ul>
                 <li>Mendengar aktif sambil kontak mata mengaktifkan mirror neuron dan membuat lawan bicara merasa dilihat.</li>
@@ -275,6 +298,7 @@
         <section class="slide">
             <h2>Pilar 3: Berani</h2>
             <div class="emoji">🚀</div>
+            <div class="three-scene" data-model="courage"></div>
             <p><span class="highlight">Berani</span> lahir saat prefrontal cortex memimpin sistem limbik (area emosional)—ketakutan terukur, keputusan tetap maju.</p>
             <ul>
                 <li>Visualisasi sukses menenangkan amigdala sehingga tubuh siap menghadapi panggung atau tantangan baru.</li>
@@ -310,7 +334,112 @@
 
     <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">7</span></div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.min.js" integrity="sha512-I3VddOZXS6jttuPAHyBs+K6TfGsDzpDHKF0FoX6Qm67AemGXhCVsQdTgXSdW3cMyERGhxlVw7lc8wWPtw5E6Tg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
+        (function initThreeScenes() {
+            if (!window.THREE) {
+                return;
+            }
+
+            const sceneBuilders = {
+                brain(scene) {
+                    const material = new THREE.MeshStandardMaterial({
+                        color: 0x8c8eff,
+                        roughness: 0.35,
+                        metalness: 0.15,
+                        flatShading: true,
+                    });
+                    const geometry = new THREE.IcosahedronGeometry(1.1, 2);
+                    const mesh = new THREE.Mesh(geometry, material);
+                    scene.userData.mesh = mesh;
+                    scene.add(mesh);
+                    addLights(scene);
+                },
+                empathy(scene) {
+                    const geometry = new THREE.TorusKnotGeometry(0.8, 0.22, 120, 18);
+                    const material = new THREE.MeshStandardMaterial({
+                        color: 0xff9ecd,
+                        emissive: 0x330033,
+                        roughness: 0.3,
+                        metalness: 0.6,
+                    });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    scene.userData.mesh = mesh;
+                    scene.add(mesh);
+                    addLights(scene);
+                },
+                courage(scene) {
+                    const geometry = new THREE.ConeGeometry(0.85, 1.6, 14);
+                    const material = new THREE.MeshStandardMaterial({
+                        color: 0xffc857,
+                        roughness: 0.2,
+                        metalness: 0.4,
+                    });
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.rotation.x = Math.PI / 4;
+                    scene.userData.mesh = mesh;
+                    scene.add(mesh);
+                    addLights(scene);
+                },
+            };
+
+            const instances = [];
+
+            function addLights(scene) {
+                const key = new THREE.DirectionalLight(0xffffff, 0.8);
+                key.position.set(2, 2, 3);
+                scene.add(key);
+                const fill = new THREE.AmbientLight(0xffffff, 0.5);
+                scene.add(fill);
+            }
+
+            document.querySelectorAll('.three-scene').forEach((container) => {
+                const modelKey = container.dataset.model;
+                const builder = sceneBuilders[modelKey];
+                if (!builder) {
+                    return;
+                }
+
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 100);
+                camera.position.set(0, 0, 4);
+
+                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                container.appendChild(renderer.domElement);
+
+                builder(scene);
+
+                instances.push({ container, scene, camera, renderer });
+            });
+
+            function animate() {
+                instances.forEach(({ scene, renderer, camera, container }) => {
+                    if (scene.userData.mesh) {
+                        scene.userData.mesh.rotation.x += 0.006;
+                        scene.userData.mesh.rotation.y += 0.01;
+                    }
+                    renderer.render(scene, camera);
+                });
+                requestAnimationFrame(animate);
+            }
+
+            function handleResize() {
+                instances.forEach((instance) => {
+                    const { container, renderer, camera } = instance;
+                    const width = container.clientWidth;
+                    const height = container.clientHeight;
+                    renderer.setSize(width, height);
+                    camera.aspect = width / height;
+                    camera.updateProjectionMatrix();
+                });
+            }
+
+            window.addEventListener('resize', handleResize);
+            animate();
+        })();
+
         let currentSlide = 0;
         const slides = document.querySelectorAll('.slide');
         const totalSlides = slides.length;
