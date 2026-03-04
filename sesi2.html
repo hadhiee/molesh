@@ -161,6 +161,43 @@
             h1{font-size:1.6rem}h2{font-size:1.25rem}
             .nav-button{font-size:.85rem;padding:10px 10px;border-radius:14px}
         }
+
+        /* === Quiz Gamification === */
+        .quiz-slide .quiz-container{text-align:center}
+        .quiz-progress{height:6px;background:rgba(255,255,255,.1);border-radius:999px;margin-bottom:22px;overflow:hidden}
+        .quiz-progress-bar{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#06b6d4);border-radius:999px;transition:width .4s ease}
+        .quiz-q{font-size:1.08rem;color:#e2e8f0;margin-bottom:18px;line-height:1.65}
+        .quiz-q-num{font-size:.78rem;color:#c4b5fd;font-weight:700;letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase}
+        .quiz-options{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto}
+        .quiz-opt{
+            background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);
+            border-radius:14px;padding:13px 16px;color:#e2e8f0;font-size:.95rem;
+            text-align:left;cursor:pointer;transition:all .25s ease;font-family:inherit;
+            display:flex;align-items:center;gap:12px;line-height:1.45;
+        }
+        .quiz-opt:hover:not(.disabled){background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+        .quiz-opt.correct{background:rgba(34,197,94,.18)!important;border-color:#22c55e!important;color:#4ade80}
+        .quiz-opt.wrong{background:rgba(244,63,94,.18)!important;border-color:#f43f5e!important;color:#fb7185}
+        .quiz-opt.disabled{pointer-events:none;opacity:.6}
+        .quiz-opt-letter{
+            min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;
+            border-radius:9px;background:rgba(255,255,255,.1);font-weight:700;font-size:.82rem;flex-shrink:0;
+        }
+        .quiz-opt.correct .quiz-opt-letter{background:rgba(34,197,94,.3)}
+        .quiz-opt.wrong .quiz-opt-letter{background:rgba(244,63,94,.3)}
+        .quiz-result{text-align:center;animation:pop .5s cubic-bezier(.22,1,.36,1) both}
+        .quiz-result-emoji{font-size:4rem;margin-bottom:10px}
+        .quiz-result-score{font-size:2.2rem;font-weight:800;background:linear-gradient(90deg,#c4b5fd,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .quiz-result-msg{font-size:1rem;color:rgba(255,255,255,.55);margin-top:8px}
+        .quiz-retry{
+            margin-top:18px;background:linear-gradient(135deg,#7c3aed,#06b6d4);
+            border:none;border-radius:14px;color:#fff;font-family:inherit;font-weight:700;
+            font-size:.9rem;padding:11px 26px;cursor:pointer;transition:all .2s;
+            box-shadow:0 4px 18px rgba(124,58,237,.3);
+        }
+        .quiz-retry:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.45)}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+        .quiz-fade{animation:fadeUp .35s ease both}
     </style>
 </head>
 <body>
@@ -247,6 +284,15 @@
             <p style="font-size:.9rem;color:rgba(255,255,255,.4)">Boleh ditulis di kertas, Notion, atau langsung di GitHub!</p>
         </section>
 
+        <section class="slide quiz-slide">
+            <h2>&#127918; Quiz Time!</h2>
+            <div class="quiz-container">
+                <div class="quiz-progress"><div class="quiz-progress-bar" id="quizBar"></div></div>
+                <div id="quizBody"></div>
+            </div>
+        </section>
+
+
         <section class="slide">
             <div class="emoji">&#10024;</div>
             <h2 style="text-align:center">Penutup Sesi 2</h2>
@@ -297,6 +343,61 @@
             if(e.key==='ArrowLeft')changeSlide(-1);
         });
         showSlide(currentSlide);
+
+        var quizData=[
+            {q:"Dalam <em>debugging mindset</em>, error seharusnya dilihat sebagai\u2026",
+             opts:["Kegagalan pribadi","Bukti tidak berbakat","Data dan feedback","Alasan untuk menyerah"],ans:2},
+            {q:"Kata kunci apa yang membuat prefrontal cortex tetap aktif mencari solusi?",
+             opts:["\u201cTidak bisa\u201d","\u201cBelum\u201d","\u201cMungkin\u201d","\u201cNanti saja\u201d"],ans:1},
+            {q:"Apa kepanjangan huruf S dalam analisis SWOT?",
+             opts:["Strategy","Solution","Strength","Skill"],ans:2}
+        ];
+
+        var quizState={current:0,score:0,answered:false};
+        function initQuiz(){
+            quizState={current:0,score:0,answered:false};
+            renderQuestion();
+        }
+        function renderQuestion(){
+            var qd=quizData[quizState.current];
+            var bar=document.getElementById('quizBar');
+            bar.style.width=(quizState.current/quizData.length*100)+'%';
+            var letters=['A','B','C','D'];
+            var h='<div class="quiz-fade"><div class="quiz-q-num">PERTANYAAN '+(quizState.current+1)+' / '+quizData.length+'</div>';
+            h+='<p class="quiz-q">'+qd.q+'</p><div class="quiz-options">';
+            for(var i=0;i<qd.opts.length;i++){
+                h+='<button class="quiz-opt" onclick="pickAnswer('+i+')" id="qopt'+i+'"><span class="quiz-opt-letter">'+letters[i]+'</span>'+qd.opts[i]+'</button>';
+            }
+            h+='</div></div>';
+            document.getElementById('quizBody').innerHTML=h;
+            quizState.answered=false;
+        }
+        function pickAnswer(idx){
+            if(quizState.answered)return;
+            quizState.answered=true;
+            var qd=quizData[quizState.current];
+            var opts=document.querySelectorAll('.quiz-opt');
+            for(var i=0;i<opts.length;i++){opts[i].classList.add('disabled');if(i===qd.ans)opts[i].classList.add('correct');}
+            if(idx===qd.ans){quizState.score++;}else{document.getElementById('qopt'+idx).classList.add('wrong');}
+            setTimeout(function(){
+                quizState.current++;
+                if(quizState.current<quizData.length){renderQuestion();}else{showQuizResult();}
+            },1300);
+        }
+        function showQuizResult(){
+            document.getElementById('quizBar').style.width='100%';
+            var s=quizState.score,t=quizData.length,emoji,msg;
+            if(s===t){emoji='&#127942;';msg='Sempurna! Kamu benar-benar paham materinya!';}
+            else if(s>=t-1){emoji='&#128079;';msg='Hebat! Hampir sempurna!';}
+            else if(s>=1){emoji='&#128170;';msg='Tetap semangat, terus belajar!';}
+            else{emoji='&#128260;';msg='Coba review materinya lagi ya!';}
+            document.getElementById('quizBody').innerHTML='<div class="quiz-result"><div class="quiz-result-emoji">'+emoji+'</div><div class="quiz-result-score">'+s+' / '+t+'</div><p class="quiz-result-msg">'+msg+'</p><button class="quiz-retry" onclick="initQuiz()">&#128260; Coba Lagi</button></div>';
+        }
+
+
+        var _origShowSlide=showSlide;
+        showSlide=function(idx){_origShowSlide(idx);if(slides[idx]&&slides[idx].classList.contains('quiz-slide'))initQuiz();};
+
     </script>
 </body>
 </html>
