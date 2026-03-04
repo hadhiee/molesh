@@ -162,6 +162,24 @@
             .nav-button{font-size:.85rem;padding:10px 10px;border-radius:14px}
         }
 
+
+        /* === Attitude Table === */
+        .att-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:16px auto;max-width:420px}
+        .att-cell{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 4px;text-align:center;transition:all .3s}
+        .att-letter{font-size:1.15rem;font-weight:800;color:#c4b5fd;line-height:1.3}
+        .att-num{font-size:.82rem;color:rgba(255,255,255,.5);margin-top:2px}
+        .att-compare{display:flex;flex-direction:column;gap:8px;margin:14px 0}
+        .att-bar-row{display:flex;align-items:center;gap:10px}
+        .att-bar-label{font-size:.88rem;font-weight:700;color:rgba(255,255,255,.6);min-width:110px;text-align:right}
+        .att-bar-track{flex:1;height:22px;background:rgba(255,255,255,.06);border-radius:12px;overflow:hidden;position:relative}
+        .att-bar-fill{height:100%;border-radius:12px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:.75rem;font-weight:700;color:#fff;transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+        .att-bar-fill.know{width:96%;background:linear-gradient(90deg,rgba(124,58,237,.5),rgba(124,58,237,.8))}
+        .att-bar-fill.work{width:98%;background:linear-gradient(90deg,rgba(6,182,212,.5),rgba(6,182,212,.8))}
+        .att-bar-fill.att{width:100%;background:linear-gradient(90deg,#7c3aed,#06b6d4)}
+        .att-hundred{font-size:2.8rem;font-weight:800;text-align:center;margin-top:10px;background:linear-gradient(90deg,#c4b5fd,#7dd3fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.2}
+        .att-hundred small{font-size:.45em;-webkit-text-fill-color:#c4b5fd;display:block;letter-spacing:2px;font-weight:600}
+        @media(max-width:420px){.att-grid{gap:4px}.att-letter{font-size:1rem}.att-num{font-size:.75rem}.att-bar-label{min-width:85px;font-size:.8rem}}
+
         /* === Quiz Gamification === */
         .quiz-slide .quiz-container{text-align:center}
         .quiz-progress{height:6px;background:rgba(255,255,255,.1);border-radius:999px;margin-bottom:22px;overflow:hidden}
@@ -288,6 +306,30 @@
             <div class="callout">
                 <strong>Tip:</strong> Saat mempresentasikan rencana di depan orang lain, otak membentuk <em>commitment device</em>&mdash;kamu lebih termotivasi menjalankannya karena ada yang &ldquo;menyaksikan janjimu&rdquo;.
             </div>
+        </section>
+
+
+        <section class="slide" id="attSlide">
+            <h2>Attitude is Everything</h2>
+            <div class="emoji">&#128175;</div>
+            <p>Ingat! Jika setiap huruf alfabet = angka (A=1 &#8230; Z=26):</p>
+            <div class="att-grid">
+                <div class="att-cell"><div class="att-letter">A</div><div class="att-num">1</div></div>
+                <div class="att-cell"><div class="att-letter">T</div><div class="att-num">20</div></div>
+                <div class="att-cell"><div class="att-letter">T</div><div class="att-num">20</div></div>
+                <div class="att-cell"><div class="att-letter">I</div><div class="att-num">9</div></div>
+                <div class="att-cell"><div class="att-letter">T</div><div class="att-num">20</div></div>
+                <div class="att-cell"><div class="att-letter">U</div><div class="att-num">21</div></div>
+                <div class="att-cell"><div class="att-letter">D</div><div class="att-num">4</div></div>
+                <div class="att-cell"><div class="att-letter">E</div><div class="att-num">5</div></div>
+            </div>
+            <div class="att-compare">
+                <div class="att-bar-row"><span class="att-bar-label">Knowledge</span><div class="att-bar-track"><div class="att-bar-fill know">96%</div></div></div>
+                <div class="att-bar-row"><span class="att-bar-label">Hardwork</span><div class="att-bar-track"><div class="att-bar-fill work">98%</div></div></div>
+                <div class="att-bar-row"><span class="att-bar-label" style="color:#c4b5fd">Attitude</span><div class="att-bar-track"><div class="att-bar-fill att">100%</div></div></div>
+            </div>
+            <div class="att-hundred">= 100%<small>ATTITUDE IS EVERYTHING</small></div>
+            <p style="font-size:.9rem;color:rgba(255,255,255,.45);text-align:center;margin-top:8px">Roadmap terbaik sia-sia tanpa <span class="highlight">attitude</span> konsisten untuk menjalankannya setiap hari.</p>
         </section>
 
         <section class="slide quiz-slide">
