@@ -378,6 +378,7 @@
             html += '<div class="tab-bar">' +
                 '<button class="tab-btn active" onclick="switchTab(this,\'tabStudents\')" >📋 Data Siswa</button>' +
                 '<button class="tab-btn" onclick="switchTab(this,\'tabCheckin\')" >📅 Check-In</button>' +
+                '<button class="tab-btn" onclick="switchTab(this,\'tabRefleksi\');loadReflections()" >📝 Refleksi</button>' +
                 '</div>';
 
             html += '<div id="tabStudents" class="tab-content active">';
@@ -414,6 +415,21 @@
             html += '<h3 style="margin-top:24px;font-size:.95rem;color:#e2e8f0">📝 Log Check-In Siswa</h3>';
             html += '<div id="ciLogWrap" style="margin-top:10px"><div class="empty-state"><div class="empty-icon">⏳</div><p>Memuat log...</p></div></div>';
             html += '</div>'; /* close tabCheckin */
+
+            /* ── Tab: Refleksi ── */
+            html += '<div id="tabRefleksi" class="tab-content">';
+            html += '<div class="toolbar">' +
+                '<input class="search-input" id="refSearchInput" type="text" placeholder="🔍 Cari nama atau email..." oninput="filterReflections()">' +
+                '<select class="filter-select" id="filterSesi" onchange="filterReflections()">' +
+                '<option value="">Semua Sesi</option>' +
+                '<option value="1">Sesi 1</option><option value="2">Sesi 2</option>' +
+                '<option value="3">Sesi 3</option><option value="4">Sesi 4</option>' +
+                '<option value="5">Sesi 5</option><option value="6">Sesi 6</option></select>' +
+                '<button class="refresh-btn" onclick="loadReflections()">🔄 Refresh</button>' +
+                '<button class="export-btn" onclick="exportReflCSV()">📥 Export CSV</button></div>';
+            html += '<div id="refStats" style="margin-bottom:14px"></div>';
+            html += '<div id="refTableWrap"><div class="empty-state"><div class="empty-icon">📝</div><p>Klik tab ini untuk memuat data refleksi.</p></div></div>';
+            html += '</div>'; /* close tabRefleksi */
 
             panel.innerHTML = html;
 
@@ -614,6 +630,109 @@
             });
             html += '</tbody></table></div>';
             el.innerHTML = html;
+        }
+
+        /* ══════════════════════════════════════
+           REFLECTIONS MANAGEMENT
+           ══════════════════════════════════════ */
+        var allReflections = [];
+        var _refLoaded = false;
+
+        function loadReflections() {
+            var wrap = document.getElementById('refTableWrap');
+            var stats = document.getElementById('refStats');
+            if (!wrap) return;
+            wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⏳</div><p>Memuat data refleksi...</p></div>';
+
+            fetch(API_URL + '?type=reflections')
+                .then(function(r){ return r.json(); })
+                .then(function(data){
+                    allReflections = data;
+                    _refLoaded = true;
+                    renderRefStats(stats);
+                    renderReflections(wrap);
+                })
+                .catch(function(err){
+                    wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><p>Gagal memuat: ' + err.message + '</p></div>';
+                });
+        }
+
+        function renderRefStats(el) {
+            if (!el) return;
+            var total = allReflections.length;
+            var perSesi = {};
+            allReflections.forEach(function(r){ perSesi[r.sesi] = (perSesi[r.sesi]||0)+1; });
+            var html = '<div class="stats" style="grid-template-columns:repeat(auto-fit,minmax(100px,1fr))">';
+            html += '<div class="stat"><div class="stat-num">' + total + '</div><div class="stat-label">Total Refleksi</div></div>';
+            for (var i = 1; i <= 6; i++) {
+                html += '<div class="stat"><div class="stat-num">' + (perSesi[i]||perSesi[''+i]||0) + '</div><div class="stat-label">Sesi ' + i + '</div></div>';
+            }
+            html += '</div>';
+            el.innerHTML = html;
+        }
+
+        function renderReflections(el) {
+            if (!allReflections.length) {
+                el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>Belum ada refleksi yang masuk.</p></div>';
+                return;
+            }
+            var html = '<div class="table-wrap"><table class="data-table" id="refTable"><thead><tr>' +
+                '<th>No</th><th>Sesi</th><th>Nama</th><th>Email</th><th>Kelas</th><th>Absen</th><th>Refleksi</th><th>Waktu</th>' +
+                '</tr></thead><tbody id="refTableBody">';
+            allReflections.forEach(function(r, i){
+                html += '<tr data-sesi="' + (r.sesi||'') + '" data-nama="' + (r.nama||r.googleName||'').toLowerCase() + '" data-email="' + (r.email||'').toLowerCase() + '">' +
+                    '<td>' + (i+1) + '</td>' +
+                    '<td style="text-align:center;font-weight:700;color:#c4b5fd">' + (r.sesi||'—') + '</td>' +
+                    '<td><strong>' + (r.nama||r.googleName||'—') + '</strong></td>' +
+                    '<td style="font-size:.75rem;color:rgba(255,255,255,.4)">' + (r.email||'—') + '</td>' +
+                    '<td>' + (r.kelas||'—') + '</td>' +
+                    '<td style="text-align:center">' + (r.absen||'—') + '</td>' +
+                    '<td style="max-width:280px;font-size:.78rem;line-height:1.5;color:#cbd5e1">' + escHtml(r.refleksi||'—') + '</td>' +
+                    '<td style="font-size:.72rem;color:rgba(255,255,255,.35);white-space:nowrap">' + (r.submittedAt ? formatDate(r.submittedAt) : '—') + '</td>' +
+                    '</tr>';
+            });
+            html += '</tbody></table></div>';
+            el.innerHTML = html;
+        }
+
+        function escHtml(s) {
+            var d = document.createElement('div');
+            d.textContent = s;
+            return d.innerHTML;
+        }
+
+        function filterReflections() {
+            var q = (document.getElementById('refSearchInput')||{}).value;
+            q = q ? q.toLowerCase() : '';
+            var sesi = (document.getElementById('filterSesi')||{}).value;
+            var rows = document.querySelectorAll('#refTableBody tr');
+            rows.forEach(function(row){
+                var matchQ = !q || (row.dataset.nama||'').indexOf(q) > -1 || (row.dataset.email||'').indexOf(q) > -1;
+                var matchS = !sesi || row.dataset.sesi === sesi;
+                row.style.display = (matchQ && matchS) ? '' : 'none';
+            });
+        }
+
+        function exportReflCSV() {
+            if (!allReflections.length) return;
+            var csv = 'No,Sesi,Nama,Email,Kelas,Absen,Refleksi,Waktu\n';
+            allReflections.forEach(function(r, i){
+                csv += (i+1) + ',' +
+                    (r.sesi||'') + ',' +
+                    '"' + (r.nama||r.googleName||'').replace(/"/g,'""') + '",' +
+                    '"' + (r.email||'') + '",' +
+                    '"' + (r.kelas||'') + '",' +
+                    (r.absen||'') + ',' +
+                    '"' + (r.refleksi||'').replace(/"/g,'""').replace(/\n/g,' ') + '",' +
+                    '"' + (r.submittedAt||'') + '"\n';
+            });
+            var blob = new Blob([csv], {type:'text/csv'});
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'molesh_refleksi_' + new Date().toISOString().slice(0,10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         function formatTanggal(str) {

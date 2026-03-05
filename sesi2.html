@@ -146,6 +146,18 @@
         }
         .session-nav-link:hover{background:rgba(255,255,255,.14)}
 
+        /* Reflection form */
+        .refleksi-box{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:16px;padding:18px 20px;margin-top:18px;text-align:left}
+        .refleksi-box h4{font-size:.9rem;font-weight:700;color:#c4b5fd;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+        .refleksi-box .ref-instruksi{font-size:.8rem;color:rgba(255,255,255,.45);margin-bottom:12px;line-height:1.6}
+        .refleksi-box textarea{width:100%;min-height:90px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px 14px;font-family:inherit;font-size:.85rem;color:#e2e8f0;outline:none;resize:vertical;transition:border-color .2s}
+        .refleksi-box textarea:focus{border-color:rgba(124,58,237,.5)}
+        .refleksi-box textarea::placeholder{color:rgba(255,255,255,.2)}
+        .ref-submit{width:100%;margin-top:10px;padding:11px;border:none;border-radius:12px;background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s}
+        .ref-submit:hover{opacity:.85;transform:translateY(-1px)}
+        .ref-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .ref-success{text-align:center;padding:12px;font-size:.85rem;font-weight:600;color:#4ade80;background:rgba(34,197,94,.08);border-radius:12px;margin-top:10px;display:none}
+
         @media(max-width:768px){
             .presentation-container{align-items:flex-start;padding:56px 12px calc(100px + env(safe-area-inset-bottom))}
             .slide{margin-top:6px;max-height:calc(100dvh - 170px - env(safe-area-inset-bottom));padding:28px 24px;border-radius:20px;justify-content:flex-start}
@@ -356,6 +368,15 @@
                 <strong>Refleksi:</strong> Apakah kamu sudah jujur dengan SWOT dirimu hari ini?
             </div>
             <p class="center-text" style="margin-top:12px"><span class="gdt-badge">&#127758; Get Ready to Become A Global Digitalent!</span></p>
+
+            <div class="refleksi-box" id="refleksiBox">
+                <h4>&#9997;&#65039; Refleksi Sesi 2</h4>
+                <p class="ref-instruksi">Setelah mempelajari <strong>growth mindset</strong> dan <strong>personal branding</strong>, apa 1 kebiasaan yang ingin kamu ubah mulai hari ini? Jelaskan alasanmu.</p>
+                <textarea id="refleksiText" placeholder="Tulis refleksimu di sini..." maxlength="1000"></textarea>
+                <button class="ref-submit" id="refSubmitBtn" onclick="submitRefleksi()">&#128640; Kirim Refleksi</button>
+                <div class="ref-success" id="refSuccess">&#10004;&#65039; Refleksi berhasil dikirim! Terima kasih.</div>
+            </div>
+
             <div class="session-nav">
                 <a href="presentasi.html" class="session-nav-link prev">&larr; Sesi 1</a>
                 <a href="sesi3.html" class="session-nav-link next">Sesi 3 &rarr;</a>
@@ -370,6 +391,7 @@
     </div>
     <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">7</span></div>
 
+    <script src="config.js"></script>
     <script>
         var currentSlide=0;
         var slides=document.querySelectorAll('.slide');
@@ -452,6 +474,40 @@
 
         var _origShowSlide=showSlide;
         showSlide=function(idx){_origShowSlide(idx);if(slides[idx]&&slides[idx].classList.contains('quiz-slide'))initQuiz();};
+
+        /* ── Reflection submission ── */
+        var SESI_NUM = 2;
+        function submitRefleksi() {
+            var text = document.getElementById('refleksiText').value.trim();
+            if (!text) { alert('Tulis refleksimu dulu ya!'); return; }
+            var raw = localStorage.getItem('molesh_user');
+            var profile = localStorage.getItem('molesh_profile');
+            try { var user = JSON.parse(raw || '{}'); var prof = JSON.parse(profile || '{}'); } catch(e) { var user = {}; var prof = {}; }
+            if (!user.email || user.email === 'Mode pratinjau') { alert('Silakan login terlebih dahulu untuk mengirim refleksi.'); return; }
+            var btn = document.getElementById('refSubmitBtn');
+            btn.disabled = true; btn.textContent = '\u23F3 Mengirim...';
+            var apiUrl = '';
+            try { apiUrl = MOLESH_CONFIG.APPS_SCRIPT_URL; } catch(e) {}
+            if (!apiUrl || apiUrl === 'YOUR_APPS_SCRIPT_URL') { alert('Backend belum dikonfigurasi.'); btn.disabled = false; btn.textContent = '\uD83D\uDE80 Kirim Refleksi'; return; }
+            var payload = JSON.stringify({ action: 'saveReflection', sesi: SESI_NUM, email: user.email, googleName: user.name || '', nama: prof.nama || '', kelas: prof.kelas || '', absen: prof.absen || '', refleksi: text });
+            fetch(apiUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: payload })
+                .then(function() {
+                    btn.style.display = 'none';
+                    document.getElementById('refleksiText').disabled = true;
+                    document.getElementById('refSuccess').style.display = 'block';
+                    localStorage.setItem('molesh_ref_' + SESI_NUM, text);
+                })
+                .catch(function() { btn.disabled = false; btn.textContent = '\uD83D\uDE80 Kirim Refleksi'; alert('Gagal mengirim. Coba lagi.'); });
+        }
+        (function() {
+            var saved = localStorage.getItem('molesh_ref_' + SESI_NUM);
+            if (saved) {
+                document.getElementById('refleksiText').value = saved;
+                document.getElementById('refleksiText').disabled = true;
+                document.getElementById('refSubmitBtn').style.display = 'none';
+                document.getElementById('refSuccess').style.display = 'block';
+            }
+        })();
 
     </script>
 </body>

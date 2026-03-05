@@ -26,6 +26,7 @@
 var SHEET_NAME = 'Students';
 var CHECKIN_SETTINGS_SHEET = 'CheckIn_Settings';
 var CHECKIN_LOG_SHEET = 'CheckIn_Log';
+var REFLECTIONS_SHEET = 'Reflections';
 var SHEET_ID = '1T0Bu-46xgInjUK1VxE8WeeMJ8V-REsKXET5KdyjWlgo'; // MOLESH Data spreadsheet
 
 /* ── Handle POST (login, saveProfile, checkin actions) ── */
@@ -47,6 +48,8 @@ function doPost(e) {
       return handleDeleteCheckinSetting(data);
     } else if (data.action === 'doCheckin') {
       return handleDoCheckin(data);
+    } else if (data.action === 'saveReflection') {
+      return handleSaveReflection(data);
     }
 
     return jsonResponse({ error: 'Unknown action' });
@@ -69,6 +72,8 @@ function doGet(e) {
     return getSheetAsJSON(getOrCreateCheckinLog());
   } else if (type === 'activeCheckin') {
     return getActiveCheckin();
+  } else if (type === 'reflections') {
+    return getSheetAsJSON(getOrCreateReflections());
   }
   return jsonResponse([]);
 }
@@ -249,6 +254,44 @@ function handleDoCheckin(data) {
     data.checkinId, data.tanggal || '', data.deskripsi || '',
     data.email, data.googleName || '', data.nama || '',
     data.kelas || '', data.absen || '', now
+  ]);
+  return jsonResponse({ status: 'ok' });
+}
+
+/* ══════════════════════════════════════════════════════════
+   REFLECTIONS (new sheet)
+   ══════════════════════════════════════════════════════════ */
+
+function getOrCreateReflections() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName(REFLECTIONS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(REFLECTIONS_SHEET);
+    sheet.appendRow(['sesi', 'email', 'googleName', 'nama', 'kelas', 'absen', 'refleksi', 'submittedAt']);
+    sheet.setFrozenRows(1);
+    sheet.getRange('A1:H1').setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/* Save a student reflection */
+function handleSaveReflection(data) {
+  var sheet = getOrCreateReflections();
+  // Prevent duplicate (same email + sesi) — update existing
+  var allData = sheet.getDataRange().getValues();
+  for (var i = 1; i < allData.length; i++) {
+    if (String(allData[i][0]) == String(data.sesi) && allData[i][1] === data.email) {
+      var row = i + 1;
+      sheet.getRange(row, 7).setValue(data.refleksi || '');
+      sheet.getRange(row, 8).setValue(new Date().toISOString());
+      return jsonResponse({ status: 'updated' });
+    }
+  }
+  var now = new Date().toISOString();
+  sheet.appendRow([
+    data.sesi || '', data.email || '', data.googleName || '',
+    data.nama || '', data.kelas || '', data.absen || '',
+    data.refleksi || '', now
   ]);
   return jsonResponse({ status: 'ok' });
 }
