@@ -159,45 +159,44 @@
         .dashboard.hidden{display:none}
 
         .user-bar{
-            display:flex;align-items:center;gap:12px;
             background:rgba(255,255,255,.06);
             backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
             border:1px solid rgba(255,255,255,.1);
             border-radius:16px;
-            padding:14px 18px;margin-bottom:18px;
+            padding:16px 18px;margin-bottom:18px;
+        }
+        .user-bar-top{
+            display:flex;align-items:center;gap:12px;
         }
         .user-avatar{
-            width:40px;height:40px;border-radius:12px;object-fit:cover;
-            border:2px solid rgba(124,58,237,.4);
+            width:44px;height:44px;border-radius:12px;object-fit:cover;
+            border:2px solid rgba(124,58,237,.4);flex-shrink:0;
         }
-        .user-info{flex:1;text-align:left}
-        .user-name{font-size:.9rem;font-weight:700;color:#e2e8f0}
-        .user-email{font-size:.72rem;color:rgba(255,255,255,.4)}
-        .sign-out-btn{
-            background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
-            border-radius:10px;color:rgba(255,255,255,.5);
-            font-family:inherit;font-size:.72rem;font-weight:600;
-            padding:7px 14px;cursor:pointer;transition:all .2s;
+        .user-info{flex:1;text-align:left;min-width:0}
+        .user-name{font-size:.9rem;font-weight:700;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .user-email{font-size:.72rem;color:rgba(255,255,255,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .user-actions{
+            display:flex;gap:8px;margin-top:12px;
         }
-        .sign-out-btn:hover{background:rgba(244,63,94,.15);color:#fb7185;border-color:rgba(244,63,94,.3)}
-
-        .profile-btn{
-            text-decoration:none;
-            background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.25);
-            border-radius:10px;color:#c4b5fd;
-            font-family:inherit;font-size:.72rem;font-weight:600;
-            padding:7px 14px;cursor:pointer;transition:all .2s;
+        .user-actions a,.user-actions button{
+            flex:1;display:inline-flex;align-items:center;justify-content:center;gap:5px;
+            border-radius:10px;
+            font-family:inherit;font-size:.75rem;font-weight:600;
+            padding:9px 12px;cursor:pointer;transition:all .2s;
+            text-decoration:none;white-space:nowrap;
         }
-        .profile-btn:hover{background:rgba(124,58,237,.25);color:#e2d6ff;border-color:rgba(124,58,237,.4)}
-
         .admin-btn{
-            text-decoration:none;
-            background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.25);
-            border-radius:10px;color:#fb7185;
-            font-family:inherit;font-size:.72rem;font-weight:600;
-            padding:7px 14px;transition:all .2s;
+            background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.25);color:#fb7185;
         }
         .admin-btn:hover{background:rgba(244,63,94,.25);color:#fda4af;border-color:rgba(244,63,94,.4)}
+        .profile-btn{
+            background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.25);color:#c4b5fd;
+        }
+        .profile-btn:hover{background:rgba(124,58,237,.25);color:#e2d6ff;border-color:rgba(124,58,237,.4)}
+        .sign-out-btn{
+            background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.5);
+        }
+        .sign-out-btn:hover{background:rgba(244,63,94,.15);color:#fb7185;border-color:rgba(244,63,94,.3)}
 
         .dash-card{
             background:rgba(255,255,255,.06);
@@ -315,13 +314,17 @@
     <!-- ═══════════ DASHBOARD (after login) ═══════════ -->
     <section class="dashboard hidden" id="dashboard">
         <div class="user-bar" id="userBar">
-            <img class="user-avatar" id="userAvatar" src="" alt="avatar">
-            <div class="user-info">
-                <div class="user-name" id="userName"></div>
-                <div class="user-email" id="userEmail"></div>
+            <div class="user-bar-top">
+                <img class="user-avatar" id="userAvatar" src="" alt="avatar">
+                <div class="user-info">
+                    <div class="user-name" id="userName"></div>
+                    <div class="user-email" id="userEmail"></div>
+                </div>
             </div>
-            <a class="profile-btn" href="profil.html">👤 Profil</a>
-            <button class="sign-out-btn" onclick="handleSignOut()">Sign Out</button>
+            <div class="user-actions" id="userActions">
+                <a class="profile-btn" href="profil.html">👤 Profil</a>
+                <button class="sign-out-btn" onclick="handleSignOut()">🚪 Sign Out</button>
+            </div>
         </div>
 
         <div class="dash-card">
