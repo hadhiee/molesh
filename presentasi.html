@@ -248,29 +248,19 @@
         .ref-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
         .ref-success{text-align:center;padding:12px;font-size:.85rem;font-weight:600;color:#4ade80;background:rgba(34,197,94,.08);border-radius:12px;margin-top:10px;display:none}
 
-        /* Check-in Card */
-        #checkinArea{position:fixed;top:70px;right:20px;z-index:1000;max-width:340px;width:calc(100vw - 40px);animation:slideInRight .5s cubic-bezier(.22,1,.36,1) both;pointer-events:none}
-        #checkinArea > *{pointer-events:auto}
-        @keyframes slideInRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
-        .checkin-card{background:rgba(34,197,94,.12);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1.5px solid rgba(34,197,94,.25);border-radius:18px;padding:18px 20px;margin-bottom:12px;position:relative}
-        .checkin-card.compact{padding:8px 12px;border-radius:10px;background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.15);max-width:max-content;margin-left:auto;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-        .checkin-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-        .compact .checkin-header{gap:6px;margin-bottom:0}
-        .ci-icon{font-size:1.8rem;line-height:1}
-        .compact .ci-icon{font-size:1.1rem}
-        .checkin-header h3{font-size:1rem;font-weight:700;color:#4ade80;margin:0}
-        .compact .checkin-header h3{font-size:.75rem;font-weight:600}
-        .ci-meta{font-size:.78rem;color:rgba(255,255,255,.5);margin-bottom:12px;line-height:1.5}
-        .compact .ci-meta{display:none}
-        .ci-close{position:absolute;top:6px;right:6px;background:none;border:none;color:rgba(255,255,255,.4);font-size:1.2rem;line-height:1;cursor:pointer;padding:4px;opacity:.6;transition:opacity .2s}
-        .ci-close:hover{opacity:1}
-        .compact .ci-close{top:2px;right:2px;font-size:.9rem;padding:2px}
-        .checkin-btn{width:100%;padding:10px;border:none;border-radius:12px;background:linear-gradient(135deg,#22c55e,#06b6d4);color:#fff;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s}
-        .checkin-btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(34,197,94,.3)}
-        .checkin-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-        .checkin-done{text-align:center;font-size:.82rem;font-weight:600;color:#86efac;background:rgba(34,197,94,.15);padding:9px;border-radius:10px}
-        .compact .checkin-done{font-size:.7rem;padding:4px 8px;border-radius:6px;display:inline-block}
-        @media(max-width:768px){#checkinArea{top:auto;bottom:100px;right:12px;left:12px;max-width:none;width:auto}.checkin-card.compact{margin-left:0;margin-right:auto}}
+        /* Check-in notification bar */
+        #checkinArea{position:fixed;top:0;left:0;right:0;z-index:200}
+        @keyframes slideDown{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:none}}
+        .checkin-bar{background:rgba(11,11,26,.93);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(34,197,94,.28);padding:8px 14px;display:flex;align-items:center;gap:10px;animation:slideDown .35s cubic-bezier(.22,1,.36,1) both}
+        .cb-icon{font-size:1rem;flex-shrink:0}
+        .cb-info{flex:1;min-width:0}
+        .cb-title{font-size:.8rem;font-weight:700;color:#4ade80;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .cb-meta{font-size:.68rem;color:rgba(255,255,255,.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .cb-btn{background:linear-gradient(135deg,#22c55e,#06b6d4);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:.76rem;font-weight:700;cursor:pointer;font-family:inherit;flex-shrink:0;transition:all .18s;white-space:nowrap}
+        .cb-btn:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(34,197,94,.3)}
+        .cb-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .cb-close{background:none;border:none;color:rgba(255,255,255,.28);font-size:1.1rem;line-height:1;cursor:pointer;padding:4px;flex-shrink:0;transition:color .15s}
+        .cb-close:hover{color:rgba(255,255,255,.65)}
 
         @media(max-width:768px){
             .presentation-container{
@@ -672,18 +662,16 @@
 
                         var alreadyDone = doneIds.indexOf(ci.id) > -1;
 
-                        html += '<div class="checkin-card' + (alreadyDone ? ' compact' : '') + '" id="ci_' + ci.id + '">';
-                        html += '<button class="ci-close" onclick="dismissCheckin(\'' + ci.id + '\')" title="Tutup">×</button>';
+                        html += '<div class="checkin-bar" id="ci_' + ci.id + '">';
                         if (alreadyDone) {
-                            html += '<div class="checkin-header"><div class="ci-icon">✅</div>' +
-                                '<h3>Check-In ' + tanggal + '</h3></div>';
+                            html += '<div class="cb-icon">✅</div>' +
+                                '<div class="cb-info"><div class="cb-title">Check-In tercatat</div><div class="cb-meta">' + tanggal + '</div></div>';
                         } else {
-                            html += '<div class="checkin-header"><div class="ci-icon">📍</div>' +
-                                '<h3>Check-In Tersedia!</h3></div>' +
-                                '<div class="ci-meta">' + tanggal + (ci.deskripsi ? ' — ' + ci.deskripsi : '') + '</div>' +
-                                '<button class="checkin-btn" onclick="doCheckin(\'' + ci.id + '\',\'' + (ci.tanggal||'') + '\',\'' + (ci.deskripsi||'').replace(/'/g,"\\'") + '\')">'+
-                                '📍 Check In Sekarang</button>';
+                            html += '<div class="cb-icon">📍</div>' +
+                                '<div class="cb-info"><div class="cb-title">Check-In Tersedia!</div><div class="cb-meta">' + tanggal + (ci.deskripsi ? ' — ' + ci.deskripsi : '') + '</div></div>' +
+                                '<button class="cb-btn" onclick="doCheckin(\'' + ci.id + '\',\'' + (ci.tanggal||'') + '\',\'' + (ci.deskripsi||'').replace(/'/g,"\\'") + '\')">Check In</button>';
                         }
+                        html += '<button class="cb-close" onclick="dismissCheckin(\'' + ci.id + '\')" title="Tutup">×</button>';
                         html += '</div>';
                     });
                     area.innerHTML = html;
@@ -728,7 +716,7 @@
             } catch(e){ alert('Data user tidak valid.'); return; }
             if (!user.email || user.email === 'Mode pratinjau') { alert('Silakan login terlebih dahulu.'); return; }
 
-            var btn = document.querySelector('#ci_' + ciId + ' .checkin-btn');
+            var btn = document.querySelector('#ci_' + ciId + ' .cb-btn');
             if (btn) { btn.disabled = true; btn.textContent = '⏳ Mengirim...'; }
 
             var payload = JSON.stringify({
@@ -748,14 +736,14 @@
                     markCheckedIn(ciId);
                     var card = document.getElementById('ci_' + ciId);
                     if (card) {
-                        card.className = 'checkin-card compact';
-                        card.innerHTML = '<button class="ci-close" onclick="dismissCheckin(\'' + ciId + '\')" title="Tutup">\u00d7</button>' +
-                            '<div class="checkin-header"><div class="ci-icon">\u2705</div>' +
-                            '<h3>Check-In ' + (tanggal||'').split('-').reverse().join('-') + '</h3></div>';
+                        card.className = 'checkin-bar';
+                        card.innerHTML = '<div class="cb-icon">✅</div>' +
+                            '<div class="cb-info"><div class="cb-title">Check-In tercatat</div><div class="cb-meta">' + (tanggal||'').split('-').reverse().join('-') + '</div></div>' +
+                            '<button class="cb-close" onclick="dismissCheckin(\'' + ciId + '\')" title="Tutup">×</button>';
                     }
                 })
                 .catch(function() {
-                    if (btn) { btn.disabled = false; btn.textContent = '\uD83D\uDCCD Check In Sekarang'; }
+                    if (btn) { btn.disabled = false; btn.textContent = 'Check In'; }
                     alert('Gagal check-in. Coba lagi.');
                 });
         }
@@ -765,7 +753,7 @@
             if (card) {
                 card.style.transition = 'opacity 0.3s, transform 0.3s';
                 card.style.opacity = '0';
-                card.style.transform = 'translateX(20px)';
+                card.style.transform = 'translateY(-100%)';
                 setTimeout(function(){ card.remove(); }, 300);
                 /* Save to localStorage so it won't appear again */
                 markCheckinDismissed(ciId);
